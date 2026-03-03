@@ -11,59 +11,78 @@
 
   <button id="start-btn">ゲーム開始</button>
 
-  <div id="game-area" style="margin-top: 1em;">
+  <div style="margin-top: 1em;">
     <p id="word-display">単語: </p>
+
     <input type="text" id="guess-input" maxlength="1" placeholder="1文字入力">
     <button id="guess-btn">送信</button>
+
     <p id="message"></p>
     <pre id="hangman-stage"></pre>
   </div>
 
-  <py-script>
+<script type="py">
 from js import document
 import random
 
 word_list = ["python", "hangman", "soccer", "purple", "music", "stitch", "ball"]
+
 stages = [
     "",
     "________        ",
     "|               ",
     "|        |      ",
     "|        0      ",
-    "|       /|\     ",
-    "|       / \     ",
+    "|       /|\\     ",
+    "|       / \\     ",
     "|               "
 ]
 
 word = ""
-rletters = []
 board = []
 wrong = 0
+guessed = []
+game_over = True
 
-def start_game(event):
-    global word, rletters, board, wrong
+
+def start_game(event=None):
+    global word, board, wrong, guessed, game_over
+
     word = random.choice(word_list)
-    rletters = list(word)
     board = ["_"] * len(word)
     wrong = 0
+    guessed = []
+    game_over = False
+
     document.getElementById("word-display").innerText = "単語: " + " ".join(board)
     document.getElementById("message").innerText = "1文字ずつ当ててみてね！"
     document.getElementById("hangman-stage").innerText = ""
+    document.getElementById("guess-input").value = ""
 
-def guess_letter(event):
-    global rletters, board, wrong
+
+def guess_letter(event=None):
+    global wrong, game_over
+
+    if game_over:
+        return
+
     char = document.getElementById("guess-input").value.lower()
     document.getElementById("guess-input").value = ""
 
-    if not char or len(char) != 1:
-        document.getElementById("message").innerText = "1文字だけ入力してね！"
+    if not char or len(char) != 1 or not char.isalpha():
+        document.getElementById("message").innerText = "アルファベット1文字だけ入力してね！"
         return
 
-    if char in rletters:
-        indices = [i for i, c in enumerate(rletters) if c == char]
-        for i in indices:
-            board[i] = char
-            rletters[i] = "$"
+    if char in guessed:
+        document.getElementById("message").innerText = "その文字はもう使ったよ！"
+        return
+
+    guessed.append(char)
+
+    if char in word:
+        for i, c in enumerate(word):
+            if c == char:
+                board[i] = char
         document.getElementById("message").innerText = f"{char} は正解！"
     else:
         wrong += 1
@@ -73,12 +92,24 @@ def guess_letter(event):
     document.getElementById("hangman-stage").innerText = "\n".join(stages[:wrong + 1])
 
     if "_" not in board:
-        document.getElementById("message").innerText = "🎉 勝ったよ！おめでとう！"
-    elif wrong == len(stages) - 1:
-        document.getElementById("message").innerText = f"💀 ゲームオーバー！正解は「{word}」だったよ。"
+        document.getElementById("message").innerText = "🎉 勝ったよ！"
+        game_over = True
+    elif wrong >= len(stages) - 1:
+        document.getElementById("message").innerText = f"💀 ゲームオーバー！正解は「{word}」"
+        game_over = True
 
+
+# ===== イベント登録 =====
 document.getElementById("start-btn").addEventListener("click", start_game)
 document.getElementById("guess-btn").addEventListener("click", guess_letter)
-  </py-script>
+
+# Enterキー対応
+def handle_key(event):
+    if event.key == "Enter":
+        guess_letter()
+
+document.getElementById("guess-input").addEventListener("keypress", handle_key)
+</script>
+
 </body>
 </html>
