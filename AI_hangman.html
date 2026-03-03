@@ -8,13 +8,18 @@
 </head>
 <body>
   <h1>ハングマンゲーム</h1>
+
   <button id="start-btn">ゲーム開始</button>
+
   <div id="game-area" style="margin-top: 1em;">
     <p id="word-display">単語: </p>
     <input type="text" id="guess-input" maxlength="1" placeholder="1文字入力">
     <button id="guess-btn">送信</button>
     <p id="message"></p>
-    <p id="hangman-stage"></p>
+    <pre id="hangman-stage"></pre>
   </div>
+
+  <!-- 外部Pythonファイルを読み込む -->
+  <py-script src="hangman.py"></py-script>
 </body>
 </html>
