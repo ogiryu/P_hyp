@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>AIハングマン</title>
+  <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+  <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+</head>
+<body>
+  <h1>AIハングマンゲーム</h1>
+
+  <button id="start-btn">ゲーム開始</button>
+
+  <div id="game-area" style="margin-top: 1em;">
+    <p id="word-display">単語: </p>
+    <input type="text" id="guess-input" maxlength="1" placeholder="1文字入力">
+    <button id="guess-btn">送信</button>
+    <p id="message"></p>
+    <pre id="hangman-stage"></pre>
+  </div>
+
+  <py-script>
+from js import document
+import random
+
+word_list = ["python", "hangman", "element", "adventure", "magic", "cloud", "stream"]
+stages = [
+    "",
+    "________        ",
+    "|               ",
+    "|        |      ",
+    "|        0      ",
+    "|       /|\\     ",
+    "|       / \\     ",
+    "|               "
+]
+
+word = ""
+rletters = []
+board = []
+wrong = 0
+
+def start_game(event):
+    global word, rletters, board, wrong
+    word = random.choice(word_list)
+    rletters = list(word)
+    board = ["_"] * len(word)
+    wrong = 0
+    document.getElementById("word-display").innerText = "単語: " + " ".join(board)
+    document.getElementById("message").innerText = "1文字ずつ当ててみてね！"
+    document.getElementById("hangman-stage").innerText = ""
+
+def guess_letter(event):
+    global rletters, board, wrong
+    char = document.getElementById("guess-input").value.lower()
+    document.getElementById("guess-input").value = ""
+
+    if not char or len(char) != 1:
+        document.getElementById("message").innerText = "1文字だけ入力してね！"
+        return
+
+    if char in rletters:
+        indices = [i for i, c in enumerate(rletters) if c == char]
+        for i in indices:
+            board[i] = char
+            rletters[i] = "$"
+        document.getElementById("message").innerText = f"{char} は正解！"
+    else:
+        wrong += 1
+        document.getElementById("message").innerText = f"{char} は不正解！"
+
+    document.getElementById("word-display").innerText = "単語: " + " ".join(board)
+    document.getElementById("hangman-stage").innerText = "\n".join(stages[:wrong + 1])
+
+    if "_" not in board:
+        document.getElementById("message").innerText = "🎉 勝ったよ！おめでとう！"
+    elif wrong == len(stages) - 1:
+        document.getElementById("message").innerText = f"💀 ゲームオーバー！正解は「{word}」だったよ。"
+
+document.getElementById("start-btn").addEventListener("click", start_game)
+document.getElementById("guess-btn").addEventListener("click", guess_letter)
+  </py-script>
+</body>
+</html>
