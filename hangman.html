@@ -12,11 +12,11 @@
   <div id="output"></div>
   <button id="run-btn">ハングマンをプレイ！</button>
   <py-script>
-from js import document
+    from js import document
 
-def on_button_click(event):
-    document.getElementById("output").innerHTML = "Pythonが実行されました！"
-document.getElementById("run-btn").addEventListener("click", on_button_click)
+    def on_button_click(event):
+        document.getElementById("output").innerHTML = "Pythonが実行されました！"
+    document.getElementById("run-btn").addEventListener("click", on_button_click)
   </py-script>
 </body>
 </html>
