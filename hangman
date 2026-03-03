@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ハングマン</title>
+  <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+  <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+</head>
+<body>
+  <h1>ようこそ！</h1>
+  <div id="output"></div>
+  <button id="run-btn">ハングマンをプレイ！</button>
+  <py-script>
+from js import document
+
+def on_button_click(event):
+    document.getElementById("output").innerHTML = "Pythonが実行されました！"
+document.getElementById("run-btn").addEventListener("click", on_button_click)
+  </py-script>
+</body>
+</html>
