@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+  </head>
+  <body>
+    <h1>Python on the Web</h1>
+
+    <py-script>
+      import matplotlib.pyplot as plt
+
+
+
+      while True:
+        years = []
+        assets = []
+        principal = []
+        print()
+        print("積立NISAシミュレーション")
+        aa = input("毎月の積立金額を入力してください（やめる場合はｑを入力)：")
+        if aa == "q":
+            print("終了")
+            break
+        else:
+            pass
+        try:
+            aa = int(aa)
+        except ValueError:
+            print("数字またはｑを入力してください")
+            continue
+        ab = input("年利を％表記で入力してください：")
+        try:
+            ab = float(ab)
+        except ValueError:
+            print("数字を入力してください")
+            continue
+        ab = ab / 100 / 12
+        ac = input("運用年数を入力してください：")
+        try:
+            ac = int(ac)
+        except ValueError:
+            print("数字を入力してください")
+            continue
+        if ac < 0:
+            print("正の値を入力してください")
+            continue
+        ad = 0
+        for i in range(ac * 12):
+            ad = ad * (1 + ab)
+            ad += aa
+            if (i + 1) % 12 == 0:
+                print("{}年目：元本{}円　元利合計{}円　利益は{}円".format((i + 1) // 12,int(aa * (i + 1)),int(ad),int(ad - aa * (i + 1))))
+                years.append((i + 1) // 12)
+                assets.append(ad // 10000)
+                principal.append(aa * (i + 1) // 10000)
+        print()
+        plt.plot(years,assets,label = "total")
+        plt.plot(years,principal,label = "principal")
+        plt.title("NISA")
+        plt.xlabel("year[year]")
+        plt.ylabel("amount[ten thousand yen]")
+        plt.grid(True)
+        plt.legend()
+        plt.show()
+        print()
+        print("元本は{}円　利益は{}円".format(int(aa * ac * 12),int(ad - aa * ac * 12)))
+        print("年利{}％運用年数{}年で毎月{}円積み立てたら{}円になります".format(ab * 1200,ac,aa,int(ad)))
+
+    </py-script>
+  </body>
+</html>
+
