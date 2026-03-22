@@ -4,70 +4,67 @@
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
   </head>
+
   <body>
-    <h1>Python on the Web</h1>
+    <h1>積立NISAシミュレーション</h1>
+
+    <label>毎月の積立金額：</label>
+    <input id="amount" type="number" /><br>
+
+    <label>年利（％）：</label>
+    <input id="rate" type="number" step="0.1" /><br>
+
+    <label>運用年数：</label>
+    <input id="years" type="number" /><br>
+
+    <button id="run-btn">計算する</button>
+
+    <div id="output"></div>
+    <div id="plot"></div>
 
     <py-script>
       import matplotlib.pyplot as plt
+      from pyscript import Element
 
+      def run_simulation(event):
+          amount = int(Element("amount").value)
+          rate = float(Element("rate").value) / 100 / 12
+          years = int(Element("years").value)
 
+          total = 0
+          xs = []
+          ys_total = []
+          ys_principal = []
 
-      while True:
-        years = []
-        assets = []
-        principal = []
-        print()
-        print("積立NISAシミュレーション")
-        aa = input("毎月の積立金額を入力してください（やめる場合はｑを入力)：")
-        if aa == "q":
-            print("終了")
-            break
-        else:
-            pass
-        try:
-            aa = int(aa)
-        except ValueError:
-            print("数字またはｑを入力してください")
-            continue
-        ab = input("年利を％表記で入力してください：")
-        try:
-            ab = float(ab)
-        except ValueError:
-            print("数字を入力してください")
-            continue
-        ab = ab / 100 / 12
-        ac = input("運用年数を入力してください：")
-        try:
-            ac = int(ac)
-        except ValueError:
-            print("数字を入力してください")
-            continue
-        if ac < 0:
-            print("正の値を入力してください")
-            continue
-        ad = 0
-        for i in range(ac * 12):
-            ad = ad * (1 + ab)
-            ad += aa
-            if (i + 1) % 12 == 0:
-                print("{}年目：元本{}円　元利合計{}円　利益は{}円".format((i + 1) // 12,int(aa * (i + 1)),int(ad),int(ad - aa * (i + 1))))
-                years.append((i + 1) // 12)
-                assets.append(ad // 10000)
-                principal.append(aa * (i + 1) // 10000)
-        print()
-        plt.plot(years,assets,label = "total")
-        plt.plot(years,principal,label = "principal")
-        plt.title("NISA")
-        plt.xlabel("year[year]")
-        plt.ylabel("amount[ten thousand yen]")
-        plt.grid(True)
-        plt.legend()
-        plt.show()
-        print()
-        print("元本は{}円　利益は{}円".format(int(aa * ac * 12),int(ad - aa * ac * 12)))
-        print("年利{}％運用年数{}年で毎月{}円積み立てたら{}円になります".format(ab * 1200,ac,aa,int(ad)))
+          for i in range(years * 12):
+              total = total * (1 + rate)
+              total += amount
+              if (i + 1) % 12 == 0:
+                  xs.append((i + 1) // 12)
+                  ys_total.append(total / 10000)
+                  ys_principal.append(amount * (i + 1) / 10000)
 
+          # 結果表示
+          Element("output").write(
+              f"元本：{amount * years * 12} 円<br>"
+              f"最終金額：{int(total)} 円<br>"
+              f"利益：{int(total - amount * years * 12)} 円"
+          )
+
+          # グラフ描画
+          fig, ax = plt.subplots()
+          ax.plot(xs, ys_total, label="total")
+          ax.plot(xs, ys_principal, label="principal")
+          ax.set_title("NISA")
+          ax.set_xlabel("year")
+          ax.set_ylabel("amount [ten thousand yen]")
+          ax.grid(True)
+          ax.legend()
+
+          Element("plot").clear()
+          Element("plot").write(fig)
+
+      Element("run-btn").element.onclick = run_simulation
     </py-script>
   </body>
 </html>
-
